@@ -1,0 +1,117 @@
+@import 'theme';
+
+$colorBackground: #f1f4f7;
+$colorFont: #222;
+$colorRed: #d91d46;
+$fontSize: 14px;
+
+.app {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    color: $colorFont;
+    font-size: $fontSize;
+    text-decoration: none;
+    width: 1286px;
+    padding: 0 30px;
+    margin: 0 auto;
+
+    a {
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    .app-header {
+        height: 80px;
+        width: 100%;
+        margin: 30px auto 0;
+
+        .logo-wrapper {
+            height: 50px;
+            .logo {
+                height: 30px;
+                padding: 10px 0;
+            }
+        }
+        .app-control-panel {
+            float:right;
+            height: 80px;
+        }
+
+    }
+
+
+    .app-menu {
+        $transitionTime: 300ms;
+        list-style: none;
+        width: 260px;
+        padding: 0 60px 0 0;
+        float: left;
+
+        .app-menu-item {
+            height: 30px;
+            list-style-type: none;
+            padding: 5px 0;
+            margin: 0 0 5px 0;
+            font-size: $fontSize;
+            position: relative;
+    
+            .icon {
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                z-index:0;
+                transition: $transitionTime;
+            }
+            .icon.hover {
+                z-index: 1;
+                opacity: 0;
+                background: $colorBackground;
+            }
+            
+            a {
+                margin: 0 0 0 40px;
+                transition: $transitionTime;
+                line-height: 30px;
+                color: $colorFont;
+                text-decoration: none;
+            }
+        }
+        .app-menu-item:hover {
+            a {
+                color: $colorRed;
+            }
+            .icon.hover {
+                opacity: 1;
+            }
+        }
+    }
+
+    .app-content {
+        width: 966px;
+        float:right;
+    }
+
+    .app-toast-container {
+        position: absolute;
+        top: 70px;
+        right: 80px;
+        width: 500px;
+        max-height: 100%;
+        overflow: hidden;
+    }
+
+    .app-qr-container {
+        background: rgba(0,0,0,0.4);
+        width:100%;
+        height:100%;
+        z-index: 10;
+        position: absolute;
+        top:0;
+        left:0;
+        right:0;
+        bottom:0;
+    }
+}

@@ -1,0 +1,14 @@
+
+.button {
+    display: inline-block;
+    border-radius: 3px;
+    font: 500 13px/20px "Montserrat",sans-serif;
+    padding: 6px 20px;
+    -webkit-box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    border: 1px solid transparent;
+    -webkit-transition: .3s;
+    transition: .3s;
+    text-align: center;
+    cursor: pointer;
+}

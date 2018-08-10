@@ -1,0 +1,27 @@
+.app-toast {
+    transition: 400ms;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+   //color: #ffffff;
+   width: 95%;
+   padding: 14px 0px; 
+   border: 3px solid rgba(0,0,0, 0.2);
+   margin-bottom: 24px;
+}
+
+.app-toast p {
+    padding: 0px 20px;
+}
+
+.app-toast.green {
+    background-color: rgba(132, 255, 132, 0.8);
+}
+
+.app-toast.orange {
+    background-color: rgba(255, 212, 125, 0.8);
+}
+
+.app-toast.red {
+    background-color: rgba(255, 134, 134, 0.8);
+}

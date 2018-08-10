@@ -1,0 +1,29 @@
+<div class="app">
+    <div class="app-header">
+        <a href="/" class="logo-wrapper">
+            <img class="logo" src="/assets/img/forus-logo.svg" />
+        </a>
+
+        <div class="app-control-panel">
+            <control-panel></control-panel>
+        </div>
+    </div>
+    <ul class="app-menu">
+        <li class="app-menu-item" *ngFor="let menuItem of menuItems">
+            <img class="icon passive" src="assets/img/menu/{{menuItem.iconId}}.svg" />
+            <img class="icon hover" src="assets/img/menu/{{menuItem.iconId}}-hover.svg" />
+            <a [routerLink]="[menuItem.url]">{{menuItem.name}}</a>
+        </li>
+    </ul>
+
+    <div class="app-content">
+        <router-outlet></router-outlet>
+    </div>
+
+    <div class="app-toast-container">
+        <toast *ngFor="let toast of toastService.toasts" [toast]=toast></toast>
+    </div>
+    <div *ngIf="qrService.hasCode" class="app-qr-container" (click)="qrClick($event)">
+        <qr-view id="{{qrSelector}}"></qr-view>
+    </div>
+</div>

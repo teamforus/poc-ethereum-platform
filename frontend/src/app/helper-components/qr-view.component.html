@@ -1,0 +1,9 @@
+<div class="qr-container">
+    <div class="qr-wrapper">
+        <qrcode class="qr" [qrdata]="qrService.code" [size]="512" [level]="'M'"></qrcode>
+    </div>
+    <p style="word-break: break-all">{{qrService.code}}</p>
+    <div class="qr-content">
+        <p>Scan deze code met je identiteits app</p>
+    </div>
+</div>

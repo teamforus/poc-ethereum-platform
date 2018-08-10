@@ -1,0 +1,39 @@
+<div *ngIf="!!_token">
+    <h1>Validatie aanpassen</h1>
+
+    <div class="card">
+        <div class="card-content form">
+            <div class="field-wrapper">
+                <div class="field-label">
+                    Hoeveel validatie regels is genoeg voordat er mensen uit flatgebouwen springen?
+                </div>
+                <div class="field-input">
+                    <input value="42" max="255" />
+                </div>
+            </div>
+        </div>
+        <div class="card-bottom">
+            <div class="button-wrapper">
+                <div class="button-submit-wrapper">
+                    <button class="button-submit" (click)="submitNewValidationRule()">Spring</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h1>Voucher activeren</h1>
+    <div class="card">
+        <p class="card-content info">
+            Momenteel is de voucher nog niet actief en kunnen mensen deze nog niet aanvragen. Dit betekent ook dat u nog in staat bent
+            deze aan te passen. Door op de knop hieronder te drukken, maak je de voucher actief en kunnen mensen die voldoen
+            aan de regels hierboven hem aanvragen.
+        </p>
+        <div class="card-bottom">
+            <div class="button-wrapper">
+                <div class="button-enable-wrapper">
+                    <button class="button-enable" (click)="enable()">Actief maken</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

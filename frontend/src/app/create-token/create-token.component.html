@@ -1,0 +1,94 @@
+<h1>Ik wil sponsor worden</h1>
+
+<div *ngIf="!_agrees">
+    <div class="card">
+        <p class="card-content info">Om sponsor te worden, moet je een fonds opzetten om vouchers uit te delen.</p>
+    </div>
+    <div class="card">
+        <div class="card-content form">
+            <div class="field-wrapper">
+                <div class="field-label">
+                    Hoe gaat de voucher heten?
+                </div>
+                <div class="field-input">
+                    <input [(ngModel)]="_token.name" max="255" />
+                </div>
+            </div>
+            <div class="field-wrapper">
+                <div class="field-label">
+                    Hoeveel krijgt een aanvrager?
+                </div>
+                <div class="field-input">
+                    <input [(ngModel)]="_token.fundSize" type="number" />
+                </div>
+            </div>
+            <div class="field-wrapper">
+                <div class="field-label">
+                    Hoeveel wil je initieël overmaken aan de voucher?
+                </div>
+                <div class="field-input">
+                    <input [(ngModel)]="_token.initialFund" type="number" />
+                </div>
+            </div>
+            <div class="field-wrapper">
+                <div class="field-label">
+                    Tot wanneer kan de voucher aangevraagd worden?
+                </div>
+                <div class="field-input">
+                    <input [(ngModel)]="_token.expiresOn" type="date"/>
+                </div>
+            </div>
+        </div>
+        <div class="card-bottom">
+            <div class="button-wrapper">
+                    <div class="button-submit-wrapper">
+                        <button class="button-submit" (click)="submit()">Aanmaken</button>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="_agrees">
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vitae erat ligula. Mauris rutrum turpis lacus, vitae
+        maximus tortor ornare sit amet. Ut et condimentum augue. Etiam accumsan, ipsum a varius ullamcorper, magna nisi aliquam
+        dui, in varius risus tortor varius risus. Integer feugiat lacinia metus, non faucibus nunc. Vivamus dictum est sit
+        amet libero hendrerit euismod. Donec lacinia leo diam, vel condimentum libero tempus vitae. Etiam a mauris pulvinar,
+        consectetur sapien eu, dapibus tellus. Quisque consequat nulla non diam bibendum tristique. Cras tristique imperdiet
+        ligula, nec fermentum odio ornare at. Fusce rhoncus metus mi, sed gravida metus euismod sit amet.
+    </p>
+    <p>Duis elit mi, fermentum vel elit eget, sagittis consectetur nisi. Vivamus gravida fermentum condimentum. Nullam blandit
+        urna sed eros fermentum, et aliquet nibh dictum. Morbi mattis, orci nec pretium ultrices, lorem justo cursus sem,
+        sit amet blandit velit lectus vitae libero. Duis a ipsum non sapien mattis euismod. Aliquam pharetra, turpis id euismod
+        consectetur, leo risus placerat odio, eu malesuada nulla neque vel ante. Duis sit amet condimentum odio. Aenean eu
+        nisl tristique, lacinia nisi eget, condimentum nulla.
+    </p>
+    <p>Suspendisse velit erat, commodo sed congue eu, pellentesque sed urna. Proin at tincidunt quam. Praesent ullamcorper orci
+        ante, id fermentum nisi feugiat quis. Pellentesque vitae sapien suscipit, volutpat augue id, sollicitudin urna. Phasellus
+        vel erat arcu. Sed laoreet, augue at pellentesque lacinia, odio orci hendrerit metus, a tempor massa urna ut turpis.
+        Sed justo sem, vulputate quis erat consectetur, blandit sagittis orci. Suspendisse condimentum lacus vitae arcu aliquet
+        fringilla. Nulla at molestie justo. Fusce dui augue, vestibulum non turpis non, vestibulum euismod erat. Mauris a
+        lorem sit amet turpis venenatis iaculis sed non tortor. Interdum et malesuada fames ac ante ipsum primis in faucibus.
+        Proin eget erat leo. Vivamus nec elit dictum, dignissim purus ac, convallis leo. Donec efficitur, purus vel condimentum
+        posuere, arcu mi accumsan ligula, at efficitur elit mi ac enim. Aenean eget dignissim dolor, sed lacinia orci.
+    </p>
+    <p>
+        Sed placerat euismod ultricies. Sed luctus ex id suscipit rutrum. Donec id tincidunt felis. Nunc et consequat dui. Etiam
+        finibus eleifend est, non lacinia nunc consectetur eu. Proin ac odio pharetra, mollis lectus eget, scelerisque lectus.
+        Maecenas finibus velit eget interdum ultricies. Suspendisse eu orci ultrices, fringilla ante et, ornare sapien. Mauris
+        lobortis scelerisque ex ut ultricies. Integer blandit turpis a dolor posuere lacinia. Cras fringilla ipsum maximus
+        ex consequat, a ultrices mauris porttitor. Morbi augue sem, placerat eu volutpat et, tincidunt sed metus. Phasellus
+        vehicula neque eros, ut sagittis nunc facilisis ac.
+    </p>
+    <p>
+        Nulla vestibulum arcu sapien, at aliquet enim sollicitudin at. Nunc vitae ullamcorper arcu. Curabitur in tortor feugiat,
+        malesuada quam et, elementum enim. Integer cursus at augue et vestibulum. Proin ornare cursus venenatis. Praesent
+        ornare interdum mollis. Proin interdum facilisis urna et facilisis. Nullam porttitor leo tellus, eget consectetur
+        magna efficitur et. Aliquam erat volutpat.
+    </p>
+
+    <div class="margin">&nbsp;</div>
+
+    <input type="checkbox" [(ngModel)]="_agrees" />
+    <label>Ik stem toe dat ik hier geld inzet en dat Stichting Forus en andere derden hier geen invloed op hebben</label>
+</div>

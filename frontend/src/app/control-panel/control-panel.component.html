@@ -1,0 +1,16 @@
+<div class="control-panel" (mouseleave)="_showMenu = false" >
+    <div class="current-account" (mouseover)="_showMenu = true" >
+        <div class="current-account-details">
+            <span *ngIf="!this.vaultService.currentAccount">Voeg een account to om deze site te gebruiken</span>
+            <span *ngIf="this.vaultService.currentAccount">{{this.vaultService.currentAccount.name}}</span>
+        </div>
+        <ul [hidden]="!_showMenu" class="control-panel-menu">
+            <li *ngFor="let account of this.vaultService.accounts" class="option menu-account" (click)="selectAccount($event)">
+                <span attr.data-address="{{account.address}}" class="{{_accountSelector}}" [ngClass]="{'current has-icon': isCurrentAddress(account.address)}">{{account.name}}</span>
+            </li>
+            <li class="option menu-login" (click)="addAccount()" ><span class="has-icon login">Account toevoegen</span></li>
+            <li><a class="has-icon settings" href="/">Instellingen</a></li>
+            <li *ngIf="this.vaultService.accounts.length" (click)="logout()"><span class="has-icon logout">Uitloggen</span></li>
+        </ul>
+    </div>
+</div>
