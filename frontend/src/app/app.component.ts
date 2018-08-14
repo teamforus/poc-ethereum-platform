@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MenuItem } from '@models/menu-item';
 import { ToastService } from '@utils/toast.service';
 import { QrService } from '@utils/qr.service';
+import { Web3Service } from '@utils/web3.service';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,8 @@ export class AppComponent implements OnInit {
 
   constructor(
     private qrService: QrService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private _web3Service: Web3Service
   ) {}
 
   ngOnInit() {

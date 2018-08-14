@@ -1,11 +1,11 @@
-pragma solidity ^0.4.17;
+pragma solidity ^0.4.24;
 
 import { Identity } from "./Identity.sol";
 import { Owned } from "./Owned.sol";
 
 contract Validated is Owned {
     bool public enabled = false;
-    ValidationRule[] private validationRules;
+    ValidationRule[] public validationRules;
 
     event Enabled();
     event ValidationRuleAdded(uint _index, bytes32 _key, bytes2 _operator, bytes32 _value);
@@ -95,6 +95,10 @@ contract Validated is Owned {
             }
         }
         return true; 
+    }
+
+    function validationRuleCount() public view returns (uint) {
+        return validationRules.length;
     }
 
     function validateValue(Identity _identity, uint _ruleIndex) private view returns (bool isValid) {

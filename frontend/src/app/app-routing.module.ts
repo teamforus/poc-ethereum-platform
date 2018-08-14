@@ -3,16 +3,27 @@ import { Routes, RouterModule } from '@angular/router';
 import { VoucherListComponent } from '@app/vouchers/list/voucher-list.component';
 import { CreateTokenComponent } from '@app/create-token/create-token.component';
 import { EditTokenComponent } from '@app/edit-token/edit-token.component';
+import { RequestComponent } from '@app/request/request.component';
+import { VaultService } from '@utils/vault.service';
+import { RequireLoginComponent } from '@app/require-account/require-login.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/vouchers', pathMatch: 'full' },
   { path: 'vouchers', component: VoucherListComponent },
-  { path: 'ik-wil-sponsor-worden', component: CreateTokenComponent },
-  { path: 'voucher-wijzigen/:address', component: EditTokenComponent }
+  { path: 'voucher/:address/aanvragen', component: RequestComponent, canActivate: [VaultService] },
+  { path: 'voucher/:address/wijzigen', component: EditTokenComponent, canActivate: [VaultService] },
+  { path: 'ik-wil-sponsor-worden', component: CreateTokenComponent, canActivate: [VaultService] },
+  { path: 'account-vereist', component: RequireLoginComponent }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {
+   
+
+  constructor(
+    private _vaultService: VaultService
+  ) {}
+}
