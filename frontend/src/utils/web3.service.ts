@@ -11,13 +11,14 @@ import { Contract, EventLog } from 'web3/types';
 
 @Injectable()
 export class Web3Service {
-  private static readonly PLATFORM_ADDRESS = '0xf3d67e98fa7ce1f549945c8eaca8ca5438569bcd';
+  private static readonly PLATFORM_ADDRESS = '0x7fda2776f3106322fa5acc4b85092ce3eea38e1d';
   private static readonly TRANSACTION_TEMPLATE = {
     value: 0,
     chainId: 3177,
     gas: 8000000,
     gasPrice: 1
-  }
+  };
+  private static readonly WEB3_CONNECTION_STRING = 'ws://54.77.160.67:8546';
 
   private _approvals;
   private _approvalsLoaded = false;
@@ -36,7 +37,7 @@ export class Web3Service {
     private _vaultService: VaultService
   ) {
     // @ts-ignore
-    this.web3 = new Web3('ws://127.0.0.1:8546');
+    this.web3 = new Web3(Web3Service.WEB3_CONNECTION_STRING);
     this.web3.shh.newKeyPair().then((keyPair) => {
       this.initializeWhisper(keyPair);
     });
