@@ -1,4 +1,5 @@
-import { Injectable, transition } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { Observable, BehaviorSubject } from 'rxjs/RX';
 import { Token } from '@models/token';
 import { Token as CreateToken } from '@models/form/create-token';
 import { AppService, AppMessage } from '@utils/app.service';
@@ -6,24 +7,28 @@ import * as tokenAbi from '@contracts/forus-token.js';
 import * as platformAbi from '@contracts/platform-forus';
 import * as Web3 from 'web3';
 import { VaultService } from '@utils/vault.service';
-import { Contract } from '../../node_modules/web3/types';
+import { Contract, EventLog } from 'web3/types';
 
 @Injectable()
 export class Web3Service {
-  private static readonly PLATFORM_ADDRESS = '0xf3d67e98fa7ce1f549945c8eaca8ca5438569bcd';
+  private static readonly PLATFORM_ADDRESS = '0x7fda2776f3106322fa5acc4b85092ce3eea38e1d';
   private static readonly TRANSACTION_TEMPLATE = {
     value: 0,
     chainId: 3177,
     gas: 8000000,
     gasPrice: 1
-  }
+  };
+  private static readonly WEB3_CONNECTION_STRING = 'ws://54.77.160.67:8546';
 
+  private _approvals;
+  private _approvalsLoaded = false;
   private _whisperPrivateKey;
   private _whisperPublicKey;
   private _platformContract;
-  private _tokens: Array<Token> = null;
+  private _tokens: BehaviorSubject<Token[]> = new BehaviorSubject([]);
+  public readonly tokens: Observable<Token[]> = this._tokens.asObservable();
 
-  chainId = 3177;
+  readonly chainId = 3177;
   // @ts-ignore
   web3: Web3;
 
@@ -32,23 +37,25 @@ export class Web3Service {
     private _vaultService: VaultService
   ) {
     // @ts-ignore
-    this.web3 = new Web3('ws://127.0.0.1:8546');
+    this.web3 = new Web3(Web3Service.WEB3_CONNECTION_STRING);
     this.web3.shh.newKeyPair().then((keyPair) => {
       this.initializeWhisper(keyPair);
     });
     this._platformContract = new this.web3.eth.Contract(platformAbi, Web3Service.PLATFORM_ADDRESS);
+    this.updateTokens();
+    this._platformContract.events.TokenAdded(this.updateTokens);
   }
 
-  async canSucceed(transaction:Object): Promise<boolean> {
+  async canSucceed(transaction: Object): Promise<boolean> {
     let gas = -1;
-    try { 
+    try {
       gas = await this.getGasEstimate(transaction);
     } finally {
       return gas > 0;
     }
   }
 
-  async createTransaction(from: string, to:string, dataAbi:string = undefined):Promise<JSON> {
+  async createTransaction(from: string, to: string, dataAbi: string = undefined): Promise<JSON> {
     let transaction = JSON.parse(
       JSON.stringify(Web3Service.TRANSACTION_TEMPLATE)
     );
@@ -59,16 +66,16 @@ export class Web3Service {
     return transaction;
   }
 
-  private async getContract(abi, address:string): Promise<Contract> {
+  private async getContract(abi, address: string): Promise<Contract> {
     return new this.web3.eth.Contract(abi, address);
   }
 
-  async getGasEstimate(transaction: Object):Promise<number> {
+  async getGasEstimate(transaction: Object): Promise<number> {
     const gas = await this.web3.eth.estimateGas(transaction);
     return gas;
   }
 
-  async getTokenByAddress(address:string): Promise<Token> {
+  async getTokenByAddress(address: string): Promise<Token> {
     const contract = await this.getTokenContract(address);
     let providers = [];
     const providerCount = 0
@@ -83,34 +90,18 @@ export class Web3Service {
       await contract.methods.expiresOn().call(),
       providers
     );
+    if (token.enabled) {
+      contract.getPastEvents('Approval', { fromBlock: 0, toBlock: 'latest' }, (error, events) => {
+        events.forEach(event => {
+          token.approvals.push(event.returnValues['spender']); 
+        });
+      });
+    }
     return token;
   }
 
-  private async getTokenContract(address:string): Promise<Contract> {
+  private async getTokenContract(address: string): Promise<Contract> {
     return await this.getContract(tokenAbi, address);
-  }
-
-  async getTokens(balanceAddress: string | false = false): Promise<Token[]> {
-    if (!this._tokens) {
-      const length = await this._platformContract.methods.tokensLength().call().then((amount) => {
-        // securing that length is always a number
-        try {
-          return parseInt(amount) || 0;
-        } catch (e) {
-          return 0;
-        }
-      });
-      let currentAddress, currentToken;
-      this._tokens = [];
-      for (let i = 0; i < length; i++) {
-        currentAddress = await this._platformContract.methods.tokens(i).call();
-        if (!!currentAddress) {
-          currentToken = await this.getTokenByAddress(currentAddress);
-          this._tokens.push(currentToken);
-        }
-      }
-    }
-    return this._tokens;
   }
 
   private initializeWhisper(privateKey) {
@@ -156,7 +147,8 @@ export class Web3Service {
     );
     const sender = this._vaultService.currentAccount.address;
     const transaction = this.createTransaction(sender, Web3Service.PLATFORM_ADDRESS, data.encodeABI());
-    return this.canSucceed(transaction) ? transaction: null;
+    let canSucceed = await this.canSucceed(transaction);
+    return canSucceed ? transaction : null;
   }
 
   async prepareEnableToken(token: Token) {
@@ -168,8 +160,13 @@ export class Web3Service {
     return (canSucceed) ? transaction : null;
   }
 
-  refreshTokens() {
-    this._tokens = undefined;
+  async prepareRequestToken(token: Token) {
+    const sender = this._vaultService.currentAddress;
+    const contract = await this.getTokenContract(token.address);
+    const data = contract.methods.requestFor(token.owner, sender);
+    const transaction = await this.createTransaction(sender, token.address, data.encodeABI());
+    let canSucceed = await this.canSucceed(transaction);
+    return (canSucceed) ? transaction : null;
   }
 
   async sendSignedTransaction(trx: object, privateKey: string) {
@@ -181,6 +178,31 @@ export class Web3Service {
       }).catch((error) => {
         throw new Error(error);
       });
+  }
+
+  private async updateTokens() {
+    const length = await this._platformContract.methods.tokensLength().call().then((amount) => {
+      // securing that length is always a number
+      try {
+        return parseInt(amount) || 0;
+      } catch (e) {
+        return 0;
+      }
+    });
+    let currentAddress, currentToken;
+    let tokens = [];
+    for (let i = 0; i < length; i++) {
+      currentAddress = await this._platformContract.methods.tokens(i).call();
+      if (!!currentAddress) {
+        currentToken = await this.getTokenByAddress(currentAddress);
+        tokens.push(currentToken);
+      }
+    }
+    this._tokens.next(tokens);
+  }
+
+  async validatePermissions(): Promise<boolean> {
+    return false;
   }
 
 }

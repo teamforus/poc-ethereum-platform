@@ -1,0 +1,26 @@
+<div *ngIf="!!_token">
+    <h1>{{_token.name}} aanvragen</h1>
+
+    <div class="card">
+        <div class="card-content info">
+            <p>
+                Door op aanvragen te drukken, kom je mogelijk in aanmerking voor {{_token.name}}. Zorg wel dat de voucher toegang heeft tot
+                de volgende gegegevens:
+            </p>
+            <ul>
+                <li>uw naam;</li>
+                <li>uw inkomen;</li>
+                <li>het aantal kinderen waar u voor zorgt;</li>
+                <li>uw woonplaats.</li>
+            </ul>
+            <p>
+                Als u toestemming heeft gegeven voor deze gegevens, dan kan het contract kijken of u recht heeft op {{ _token.name }}.
+            </p>
+        </div>
+        <div class="card-bottom">
+            <div class="button-wrapper">
+                <button class="button-submit" (click)="requestVoucher()">Aanvraag indienen</button>
+            </div>
+        </div>
+    </div>
+</div>

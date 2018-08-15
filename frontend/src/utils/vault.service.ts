@@ -1,15 +1,18 @@
 import { Web3Service } from '@utils/web3.service';
 import { Injectable } from '@angular/core';
 import { Account } from '@models/account';
+import { CanActivate, Router, ActivatedRouteSnapshot } from '@angular/router';
 
 @Injectable()
-export class VaultService {
+export class VaultService implements CanActivate {
   private readonly ACCOUNT_KEY = 'accounts';
   private readonly ACCOUNT_CURRENT_KEY = 'current_account';
   private _accounts: Account[];
   public currentAccount: Account;
 
-  constructor() {
+  constructor(
+    private _router: Router // For canActivate authentication
+  ) {
     this._accounts = JSON.parse(localStorage.getItem(this.ACCOUNT_KEY)) || [];
     this.currentAccount = JSON.parse(localStorage.getItem(this.ACCOUNT_CURRENT_KEY)) || undefined;
   }
@@ -36,12 +39,20 @@ export class VaultService {
     }
     return accountFound;
   }
-  
+
+  canActivate(route: ActivatedRouteSnapshot): boolean {
+    if (this.hasAccount) {
+      return true;
+    }
+    this._router.navigate(['/account-vereist']);
+    return false;
+  }
+
   get currentAddress(): string {
     if (!!this.currentAccount) {
       return this.currentAccount.address;
     }
-    return undefined;
+    return '';
   }
 
   getAccountByAddress(address:string): Account {
@@ -52,6 +63,11 @@ export class VaultService {
       }
     }
     return ret;
+  }
+
+  get hasAccount(): boolean {
+    return !!this.currentAccount && 
+        !!this.currentAddress.length;
   }
 
   isCurrent(address:string): boolean {

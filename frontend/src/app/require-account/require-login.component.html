@@ -1,55 +1,12 @@
-<h1>Ik wil sponsor worden</h1>
+<h1>Account vereist</h1>
 
-<div *ngIf="_agrees">
-    <div class="card">
-        <p class="card-content info">Om sponsor te worden, moet je een fonds opzetten om vouchers uit te delen.</p>
-    </div>
-    <div class="card">
-        <div class="card-content form">
-            <div class="field-wrapper">
-                <div class="field-label">
-                    Hoe gaat de voucher heten?
-                </div>
-                <div class="field-input">
-                    <input [(ngModel)]="_token.name" max="255" />
-                </div>
-            </div>
-            <div class="field-wrapper">
-                <div class="field-label">
-                    Hoeveel krijgt een aanvrager?
-                </div>
-                <div class="field-input">
-                    <input [(ngModel)]="_token.fundSize" type="number" />
-                </div>
-            </div>
-            <div class="field-wrapper">
-                <div class="field-label">
-                    Hoeveel wil je initieël overmaken aan de voucher?
-                </div>
-                <div class="field-input">
-                    <input [(ngModel)]="_token.initialFund" type="number" />
-                </div>
-            </div>
-            <div class="field-wrapper">
-                <div class="field-label">
-                    Tot wanneer kan de voucher aangevraagd worden?
-                </div>
-                <div class="field-input">
-                    <input [(ngModel)]="_token.expiresOn" type="date"/>
-                </div>
-            </div>
-        </div>
-        <div class="card-bottom">
-            <div class="button-wrapper">
-                    <div class="button-submit-wrapper">
-                        <button class="button-submit" (click)="submit()">Aanmaken</button>
-                    </div>
-                </div>
-        </div>
-    </div>
-</div>
+<div *ngIf="!hasLoggedIn">
+    <p>
+        Om gebruik te maken van de functionaliteit van de site, moet een account toegevoegd zijn aan de site. Dat kan door het 
+        menu rechtsbovenin de site. Hier is de knop 'Account toevoegen'. Dit laat een QR-code zien, die u met een identiteitsapp
+        moet inscannen. Als u dit heeft gedaan, bent u ingelogd op de site en mag u gebruik maken van de functies die de site biedt. 
+    </p>
 
-<div *ngIf="!_agrees">
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vitae erat ligula. Mauris rutrum turpis lacus, vitae
         maximus tortor ornare sit amet. Ut et condimentum augue. Etiam accumsan, ipsum a varius ullamcorper, magna nisi aliquam
         dui, in varius risus tortor varius risus. Integer feugiat lacinia metus, non faucibus nunc. Vivamus dictum est sit
@@ -86,9 +43,7 @@
         ornare interdum mollis. Proin interdum facilisis urna et facilisis. Nullam porttitor leo tellus, eget consectetur
         magna efficitur et. Aliquam erat volutpat.
     </p>
-
-    <div class="margin">&nbsp;</div>
-
-    <input type="checkbox" [(ngModel)]="_agrees" />
-    <label>Ik stem toe dat ik hier geld inzet en dat Stichting Forus en andere derden hier geen invloed op hebben</label>
+</div>
+<div *ngIf="hasLoggedIn">
+    <p>Ververs de pagina om door te gaan.</p>
 </div>

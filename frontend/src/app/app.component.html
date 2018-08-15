@@ -21,7 +21,7 @@
     </div>
 
     <div class="app-toast-container">
-        <toast *ngFor="let toast of toastService.toasts" [toast]=toast></toast>
+        <toast *ngFor="let toast of toastService.toasts; let i = index" [attr.data-index]="i" (click)="toastService.remove(i)" [toast]=toast></toast>
     </div>
     <div *ngIf="qrService.hasCode" class="app-qr-container" (click)="qrClick($event)">
         <qr-view id="{{qrSelector}}"></qr-view>

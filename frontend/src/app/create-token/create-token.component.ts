@@ -7,11 +7,6 @@ import { QrService } from '@utils/qr.service';
 import { AppRequest, AppMessage } from '@utils/app.service';
 import { ToastService } from '@utils/toast.service';
 
-enum BalanceType {
-  Key,
-  Identity
-}
-
 @Component({
   selector: 'app-create-token',
   templateUrl: './create-token.component.html',

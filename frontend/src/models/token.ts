@@ -15,8 +15,19 @@ export class Token {
     this.expirationDate = new Date(expirationTimestamp);
   }
 
+  approvals: string[] = [];
+
   get expired(): boolean {
     return this.state === 2;
+  }
+
+  hasRequested(address: string): boolean {
+    this.approvals.forEach(approval => {
+      if (approval.toUpperCase() === address.toUpperCase()) {
+        return true;
+      }
+    });
+    return false;
   }
 
   /**

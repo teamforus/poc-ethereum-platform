@@ -3,6 +3,7 @@ import { VaultService } from '@utils/vault.service';
 import { Component, OnInit } from '@angular/core';
 import { Token } from '@models/token';
 import { Web3Service } from '@utils/web3.service';
+import { Observable } from '../../../../node_modules/rxjs';
 
 @Component({
   selector: 'app-vouchers',
@@ -10,15 +11,16 @@ import { Web3Service } from '@utils/web3.service';
   styleUrls: ['./voucher-list.component.scss']
 })
 export class VoucherListComponent implements OnInit {
-  tokens: Token[];
+  tokens$: Observable<Token[]>;
 
   constructor(
     private vault: VaultService,
     private web3Service: Web3Service
-  ) { }
+  ) { 
+  }
 
   async ngOnInit() {
-    this.tokens = await this.web3Service.getTokens();
+    this.tokens$ = this.web3Service.tokens;
   }
   
   private canEdit(token:Token): boolean {
@@ -30,6 +32,7 @@ export class VoucherListComponent implements OnInit {
   private canRequest(token:Token): boolean {
     return !!this.vault.currentAccount && 
           this.vault.currentAddress.toLowerCase() !== token.owner.toLowerCase() && 
+          (!token.hasRequested(this.vault.currentAddress)) &&
           token.enabled && !token.expired;
   }
 

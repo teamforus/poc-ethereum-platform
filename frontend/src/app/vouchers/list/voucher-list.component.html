@@ -1,6 +1,6 @@
 <h2>Vouchers</h2>
 
-<div class="card" *ngFor="let token of tokens">
+<div class="card" *ngFor="let token of tokens$ | async">
     <div class="card-status" attr.data-state="{{token.state}}">
         {{getStatusLabel(token)}}
     </div>
@@ -19,8 +19,8 @@
     </div>
     <div class="card-bottom">
         <div class="button-wrapper">
-            <a class="button edit-token" *ngIf="canEdit(token)" href="/voucher-wijzigen/{{token.address}}">Aanpassen</a>
-            <a class="button request-token" *ngIf="canRequest(token)" href="/">Aanvragen</a>
+            <a class="button edit-token" *ngIf="canEdit(token)" href="/voucher/{{token.address}}/wijzigen">Aanpassen</a>
+            <a class="button request-token" *ngIf="canRequest(token)" href="/voucher/{{token.address}}/aanvragen">Aanvragen</a>
         </div>
     </div>
 </div>

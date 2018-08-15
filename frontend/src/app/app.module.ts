@@ -19,6 +19,8 @@ import { QrService } from '@utils/qr.service';
 import { AppService } from '@utils/app.service';
 import { CreateTokenComponent } from '@app/create-token/create-token.component';
 import { EditTokenComponent } from '@app/edit-token/edit-token.component';
+import { RequestComponent } from '@app/request/request.component';
+import { RequireLoginComponent } from '@app/require-account/require-login.component';
 
 
 @NgModule({
@@ -28,6 +30,8 @@ import { EditTokenComponent } from '@app/edit-token/edit-token.component';
     CreateTokenComponent,
     EditTokenComponent,
     QrViewComponent,
+    RequestComponent,
+    RequireLoginComponent,
     ToastComponent,
     VoucherListComponent
   ],

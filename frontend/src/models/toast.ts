@@ -5,6 +5,13 @@ export class Toast {
         private _level: number
     ) { }
 
+    private _timeout: number|false = false;
+    set timeout(value:number) {
+        if (!this._timeout) {
+            this._timeout = value;
+        }
+    }
+
     public get className(): string {
         let ret = '';
         switch (this._level) {
@@ -25,6 +32,12 @@ export class Toast {
                 break;
         }
         return ret
+    }
+
+    public clear() {
+        if (!this._timeout) {
+            clearTimeout(parseInt(this._timeout.toString()));
+        }
     }
 
     public get message(): string { return this._message; }
