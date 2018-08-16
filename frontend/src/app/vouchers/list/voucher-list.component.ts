@@ -6,6 +6,7 @@ import { Web3Service } from '@utils/web3.service';
 import { Observable } from 'rxjs';
 import { QRCode } from 'qrcode';
 import { QrService } from '@utils/qr.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-vouchers',
@@ -16,6 +17,7 @@ export class VoucherListComponent implements OnInit {
   tokens$: Observable<Token[]>;
 
   constructor(
+    private _router: Router,
     private vault: VaultService,
     private qrService: QrService,
     private web3Service: Web3Service

@@ -15,7 +15,7 @@ import { ApprovalEvent } from '@models/approval-event';
 
 @Injectable()
 export class Web3Service {
-  private static readonly PLATFORM_ADDRESS = '0x6b1d3e90710ca92caf648a5df299b02f173defcd';
+  private static readonly PLATFORM_ADDRESS = '0xd7562879aaea423f0a9e44e264d3bbf8d1d2f57c';
   private static readonly TRANSACTION_TEMPLATE = {
     value: 0,
     chainId: 3177,
@@ -85,9 +85,9 @@ export class Web3Service {
   async getTokenByAddress(address: string): Promise<Token> {
     const contract = await this.getTokenContract(address);
     let providers = [];
-    const providerCount = 0
+    const providerCount = await contract.methods.providerCount().call();
     for (let p = 0; p < providerCount; p++) {
-      providers.push(contract.methods.providers(p).call());
+      providers.push(await contract.methods.providers(p).call());
     }
     const token = new Token(
       address,
@@ -125,6 +125,10 @@ export class Web3Service {
     }, this.onWhisperMessage.bind(this));
   }
 
+  isValidAddress(address:string): boolean {
+    return this.web3.utils.isAddress(address);
+  }
+
   private async listenToToken(address: string) {
     let isNew = true;
     for (let i = 0; i < this._tokenListeners.length; i++) {
@@ -158,9 +162,31 @@ export class Web3Service {
       const json = JSON.parse(this.web3.utils.toAscii(message.payload));
       const appMessage = new AppMessage(json.id, json.request, json.body)
       this._appService.emit(appMessage);
-    } else {
+    } else { 
       console.error(error);
     }
+  }
+ 
+  async prepareAddProvider(token: Token, providerAddress:string): Promise<Object> {
+    const contract = await this.getTokenContract(token.address);
+    const data = contract.methods.addProvider(
+      providerAddress
+    );
+    const sender = this._vaultService.currentAddress;
+    const transaction = this.createTransaction(sender, token.address, data.encodeABI());
+    let canSucceed = await this.canSucceed(transaction);
+    return canSucceed ? transaction : null;
+  }
+ 
+  async prepareApplyForProvider(token: Token): Promise<Object> {
+    const contract = await this.getTokenContract(token.address);
+    const data = contract.methods.applyForProvider(
+      this._vaultService.currentAddress
+    );
+    const sender = this._vaultService.currentAddress;
+    const transaction = this.createTransaction(sender, token.address, data.encodeABI());
+    let canSucceed = await this.canSucceed(transaction);
+    return canSucceed ? transaction : null;
   }
 
   async prepareCreateToken(token: CreateToken): Promise<Object> {

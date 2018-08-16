@@ -44,6 +44,11 @@
     line-height: 30px;
     margin: 0;
     font-weight: 400;
+    text-decoration: none;
+}
+
+.card-name:hover{ 
+    text-decoration: underline;
 }
 
 .card-sponsor {
@@ -53,7 +58,7 @@
     line-height: 26px;
     margin: 0;
     font-weight: 400;
-
+ 
 }
 
 .card-status {

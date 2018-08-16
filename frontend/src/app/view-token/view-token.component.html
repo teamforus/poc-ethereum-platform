@@ -1,0 +1,120 @@
+<div *ngIf="!!_token">
+    <h1>{{_token.name}}</h1>
+
+    <div>
+        <div class="card">
+            <div class="card-content float-wrapper">
+                <table class="left half">
+                    <tr>
+                        <td>
+                            Sponsor
+                        </td>
+                        <td title="{{_token.owner}}">
+                            {{_token.owner.substring(0, 10)}}...
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Actief
+                        </td>
+                        <td>
+                            {{_token.enabled ? 'Ja':'Nee'}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Verloopt op
+                        </td>
+                        <td>
+                            {{_token.expirationDate.getDate()}}/{{_token.expirationDate.getMonth()+1}}/{{_token.expirationDate.getFullYear()}}
+                        </td>
+                    </tr>
+                </table>
+                <div class="right half" *ngIf="_token.hasProviders">
+                    <h5>Leveranciers</h5>
+                    <ul>
+                        <li *ngFor="let provider of _token.providers">{{provider}}</li>
+                    </ul>
+                </div>
+                <div class="right half" *ngIf="!_token.hasProviders">
+                    {{_token.name}} heeft nog geen leveranciers. 
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="_token.isOwner(_vaultService.currentAddress)">
+            <h2>Leverancier toevoegen</h2>
+            <div class="card">
+                <div class="card-content info">
+                    <p>
+                        Leverancier toevoegen aan {{_token.name}}.
+                    </p>
+                    <div class="field-wrapper">
+                        <input type="text" [(ngModel)]="_providerAddress"  />
+                        <span style="color:red" *ngIf="_providerAddressError">Adres ongeldig</span>
+                    </div>
+
+                </div>
+                <div class="card-bottom">
+                    <div class="button-wrapper">
+                        <button (click)="addProvider()">Toevoegen</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="_token.isOwner(_vaultService.currentAddress) && !_token.enabled">
+            <h1>Voucher activeren</h1>
+            <div class="card">
+                <div class="card-content info">
+                    <p>
+                        Momenteel is de voucher nog niet actief en kunnen mensen deze nog niet aanvragen. Dit betekent ook dat u nog in staat bent
+                        deze validatieregels aan te passen. Door op de knop hieronder te drukken, maak je de voucher actief
+                        en kunnen mensen die voldoen aan de regels hierboven hem aanvragen.
+                    </p>
+                    <p>
+                        Nadat {{_token.name}} actief gemaakt is, bent u nog steeds in staat om leveranciers toe te voegen.
+                    </p>
+                </div>
+                <div class="card-bottom">
+                    <div class="button-wrapper">
+                        <div class="button-enable-wrapper">
+                            <button class="button-enable" (click)="enable()">Actief maken</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h2>Leveranciersaanvragen</h2>
+
+            <div class="card">
+                <div class="card-content info">
+                    <ul>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="!_token.isOwner(_vaultService.currentAddress)">
+            <h2>Word leverancier</h2>
+            <div class="card">
+                <div class="card-content info">
+                    <p>Bent u eigenaar van een winkel en wilt u {{_token.name}} accepteren in uw winkel? Dat kan! Hierbij moet
+                        u zich aanmelden als leverancieer van {{_token.name}}.</p>
+                    <P>Wat u wel moet onthouden, is dat als u een leverancieer bent, u niet geen {{_token.name}} vouchers meer
+                        mag aanvragen.</P>
+                </div>
+                <div class="card-bottom">
+                    <div class="button-wrapper">
+                        <div class="button-submit-wrapper">
+                            <button class="button-provider" (click)="becomeProvider()">Aanmelden</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -17,6 +17,24 @@ $cardBorderColor: #e7e7e7;
 
 .card-content {
     padding: 0 35px 20px 35px;
+
+    .half {
+        width: 45%;
+    }
+
+    .left {
+        float: left;
+    }
+
+    .right { 
+        float: right;
+    }
+}
+
+.float-wrapper {
+    padding-top: 20px;
+    width: calc(100% - 70px);
+    display: inline-block;
 }
 
 .card-bottom {
