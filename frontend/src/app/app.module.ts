@@ -21,6 +21,7 @@ import { CreateTokenComponent } from '@app/create-token/create-token.component';
 import { EditTokenComponent } from '@app/edit-token/edit-token.component';
 import { RequestComponent } from '@app/request/request.component';
 import { RequireLoginComponent } from '@app/require-account/require-login.component';
+import { EventService } from '@utils/event.service';
 
 
 @NgModule({
@@ -42,7 +43,7 @@ import { RequireLoginComponent } from '@app/require-account/require-login.compon
     FormsModule,
     QRCodeModule
   ],
-  providers: [AppService, QrService, ToastService, VaultService, Web3Service],
+  providers: [AppService, EventService, QrService, ToastService, VaultService, Web3Service],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

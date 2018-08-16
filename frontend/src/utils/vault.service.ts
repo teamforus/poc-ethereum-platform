@@ -50,7 +50,7 @@ export class VaultService implements CanActivate {
 
   get currentAddress(): string {
     if (!!this.currentAccount) {
-      return this.currentAccount.address;
+      return this.currentAccount.address.toLowerCase();
     }
     return '';
   }

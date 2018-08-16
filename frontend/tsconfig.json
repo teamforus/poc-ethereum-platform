@@ -17,6 +17,9 @@
       "@utils/*": ["utils/*"]
     },
     "target": "es5",
+    "types": [
+      "web3"
+    ],
     "typeRoots": [
       "node_modules/@types"
     ],

@@ -5,8 +5,8 @@
         {{getStatusLabel(token)}}
     </div>
     <div class="card-header">
-        <div class="card-icon-wrapper">
-            <img src="https://pull01.munchkin.com/media/catalog/product/3/1/31001_1_1_2.jpg" class="card-icon" />
+        <div class="card-icon-wrapper" title="Klik hier om de QR code te bekijken" (click)="showQr(token)">
+            <qrcode [qrdata]="getQrCode(token)" [size]="64" [level]="'L'"></qrcode>
         </div>
         <div class="card-title-wrapper">
             <h2 class="card-name">{{token.name}}</h2>
