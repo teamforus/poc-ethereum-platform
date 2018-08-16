@@ -8,32 +8,38 @@ import * as platformAbi from '@contracts/platform-forus';
 import * as Web3 from 'web3';
 import { VaultService } from '@utils/vault.service';
 import { Contract, EventLog } from 'web3/types';
+import { Event } from '@models/event';
+import { EventService } from '@utils/event.service';
+import { ToastService } from '@utils/toast.service';
+import { ApprovalEvent } from '@models/approval-event';
 
 @Injectable()
 export class Web3Service {
-  private static readonly PLATFORM_ADDRESS = '0x7fda2776f3106322fa5acc4b85092ce3eea38e1d';
+  private static readonly PLATFORM_ADDRESS = '0x6b1d3e90710ca92caf648a5df299b02f173defcd';
   private static readonly TRANSACTION_TEMPLATE = {
     value: 0,
     chainId: 3177,
     gas: 8000000,
     gasPrice: 1
   };
-  private static readonly WEB3_CONNECTION_STRING = 'ws://54.77.160.67:8546';
+  private static readonly WEB3_CONNECTION_STRING = 'ws://127.0.0.1:8546';
 
   private _approvals;
-  private _approvalsLoaded = false;
+  private _approvalsLoaded = false; 
   private _whisperPrivateKey;
   private _whisperPublicKey;
   private _platformContract;
   private _tokens: BehaviorSubject<Token[]> = new BehaviorSubject([]);
   public readonly tokens: Observable<Token[]> = this._tokens.asObservable();
+  private readonly _tokenListeners: string[] = [];
 
   readonly chainId = 3177;
   // @ts-ignore
   web3: Web3;
-
+ 
   constructor(
     private _appService: AppService,
+    private _eventService: EventService,
     private _vaultService: VaultService
   ) {
     // @ts-ignore
@@ -43,7 +49,8 @@ export class Web3Service {
     });
     this._platformContract = new this.web3.eth.Contract(platformAbi, Web3Service.PLATFORM_ADDRESS);
     this.updateTokens();
-    this._platformContract.events.TokenAdded(this.updateTokens);
+    this._platformContract.events.TokenAdded(this.updateTokens.bind(this));
+
   }
 
   async canSucceed(transaction: Object): Promise<boolean> {
@@ -93,7 +100,7 @@ export class Web3Service {
     if (token.enabled) {
       contract.getPastEvents('Approval', { fromBlock: 0, toBlock: 'latest' }, (error, events) => {
         events.forEach(event => {
-          token.approvals.push(event.returnValues['spender']); 
+          token.approvals.push(event.returnValues['spender']);
         });
       });
     }
@@ -116,6 +123,24 @@ export class Web3Service {
     this.web3.shh.subscribe('messages', {
       privateKeyID: privateKey
     }, this.onWhisperMessage.bind(this));
+  }
+
+  private async listenToToken(address: string) {
+    let isNew = true;
+    for (let i = 0; i < this._tokenListeners.length; i++) {
+      if (address === this._tokenListeners[i]) {
+        isNew = false;
+      }
+    }
+    if (isNew) {
+      const tokenContract = await this.getTokenContract(address);
+      tokenContract.events.Approval((async (_, event) => {
+        const token: Token = await this.getTokenByAddress(event.address);
+        this._eventService.onEvent(new ApprovalEvent(token.name));
+      }).bind(this));
+      tokenContract.events.Enabled(this.updateTokens.bind(this));
+      this._tokenListeners.push(address);
+    }
   }
 
   /** 
@@ -196,6 +221,7 @@ export class Web3Service {
       if (!!currentAddress) {
         currentToken = await this.getTokenByAddress(currentAddress);
         tokens.push(currentToken);
+        this.listenToToken(currentAddress);
       }
     }
     this._tokens.next(tokens);

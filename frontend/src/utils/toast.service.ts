@@ -1,14 +1,27 @@
 import { Injectable } from '@angular/core';
 import { ToastWarningLevels, Toast } from '@models/toast';
+import { EventService, EventListener } from '@utils/event.service';
+import { Event } from '@models/event';
 
 @Injectable()
-export class ToastService {
+export class ToastService implements EventListener {
+
+  constructor(
+    private _eventService: EventService
+  ) {
+    this._eventService.addListener(this)
+  }
 
   private _toasts: Toast[] = [];
+
+  onEvent(event: Event) {
+    this.toast(event.data);
+  }
 
   toast(message: string, level: number = ToastWarningLevels.LOW) {
     const toast = new Toast(message, level)
     this._toasts.unshift(toast);
+    // @ts-ignore
     toast.timeout = setTimeout(() => {
       this._toasts.pop();
       // Toast duration

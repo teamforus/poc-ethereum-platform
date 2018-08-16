@@ -3,6 +3,9 @@
 .current-account {
     position: relative;
     height:80px;
+    text-align: right;
+    min-width: 200px;
+    padding-right: 20px;
 
     .current-account-details {
         line-height: 50px;
@@ -10,6 +13,7 @@
 }
 
 .control-panel-menu {    
+    text-align: left;
     position: absolute;
     right: 0;
     top: 50px;
