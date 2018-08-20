@@ -1,4 +1,4 @@
-import { Key } from './key';
+import { Key } from '@utils/vault/key';
 
 export class Identity {
   name: string;

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs/RX';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { Token } from '@models/token';
 import { Token as CreateToken } from '@models/form/create-token';
 import { AppService, AppMessage } from '@utils/app.service';
-import * as tokenAbi from '@contracts/forus-token.js';
+import * as tokenAbi from '@contracts/forus-token';
 import * as platformAbi from '@contracts/platform-forus';
 import * as Web3 from 'web3';
 import { VaultService } from '@utils/vault.service';
@@ -11,18 +11,21 @@ import { Contract, EventLog } from 'web3/types';
 import { Event } from '@models/event';
 import { EventService } from '@utils/event.service';
 import { ToastService } from '@utils/toast.service';
-import { ApprovalEvent } from '@models/approval-event';
+import { ApprovalRequesterEvent } from '@models/approval-requester-event';
+import { ApprovalSponsorEvent } from '@models/approval-sponsor-event';
+import { Account } from '@models/account';
 
 @Injectable()
 export class Web3Service {
-  private static readonly PLATFORM_ADDRESS = '0xd7562879aaea423f0a9e44e264d3bbf8d1d2f57c';
+  // In case of emergancy private static readonly PLATFORM_ADDRESS = '0xd7562879aaea423f0a9e44e264d3bbf8d1d2f57c';
+  private static readonly PLATFORM_ADDRESS = '0xf75779656434e06ed7dd6dfbbec3cecabb80f266';
   private static readonly TRANSACTION_TEMPLATE = {
     value: 0,
     chainId: 3177,
-    gas: 8000000,
+    gas: 8000000, 
     gasPrice: 1
   };
-  private static readonly WEB3_CONNECTION_STRING = 'ws://127.0.0.1:8546';
+  private static readonly WEB3_CONNECTION_STRING = 'ws://10.10.12.85:8546';
 
   private _approvals;
   private _approvalsLoaded = false; 
@@ -71,10 +74,10 @@ export class Web3Service {
     transaction['nonce'] = await this.nonce(from);
     if (!!dataAbi) transaction['data'] = dataAbi;
     return transaction;
-  }
+  } 
 
   private async getContract(abi, address: string): Promise<Contract> {
-    return new this.web3.eth.Contract(abi, address);
+    return new this.web3.eth.Contract(abi, address); 
   }
 
   async getGasEstimate(transaction: Object): Promise<number> {
@@ -86,7 +89,7 @@ export class Web3Service {
     const contract = await this.getTokenContract(address);
     let providers = [];
     const providerCount = await contract.methods.providerCount().call();
-    for (let p = 0; p < providerCount; p++) {
+    for (let p = 0; p < providerCount; p++) { 
       providers.push(await contract.methods.providers(p).call());
     }
     const token = new Token(
@@ -103,6 +106,11 @@ export class Web3Service {
           token.approvals.push(event.returnValues['spender']);
         });
       });
+      /*contract.getPastEvents('ProviderApplicationReceived', {fromBlock: 0, toBlock: 'latest'}, (error, events) => {
+        events.forEach(event => {
+          token.providerRequests.push(event.returnValues['_applicationAddress']);
+        })
+      })*/
     }
     return token;
   }
@@ -140,7 +148,14 @@ export class Web3Service {
       const tokenContract = await this.getTokenContract(address);
       tokenContract.events.Approval((async (_, event) => {
         const token: Token = await this.getTokenByAddress(event.address);
-        this._eventService.onEvent(new ApprovalEvent(token.name));
+        let account:Account = this._vaultService.getAccountByAddress(event.returnValues['spender'])
+        if (!!account) {
+          this._eventService.onEvent(new ApprovalRequesterEvent(token.name, account.name));
+        }
+        account = this._vaultService.getAccountByAddress(event.returnValues['tokenOwner']);
+        if (!!account) {
+          this._eventService.onEvent(new ApprovalSponsorEvent(token.name, event.returnValues['spender']));
+        }
       }).bind(this));
       tokenContract.events.Enabled(this.updateTokens.bind(this));
       this._tokenListeners.push(address);
@@ -218,6 +233,13 @@ export class Web3Service {
     const transaction = await this.createTransaction(sender, token.address, data.encodeABI());
     let canSucceed = await this.canSucceed(transaction);
     return (canSucceed) ? transaction : null;
+  }
+
+  async refreshToken(token:Token) {
+    const newToken = await this.getTokenByAddress(token.address);
+    token.approvals = newToken.approvals;
+    token.enabled = newToken.enabled;
+    token.providers = newToken.providers;
   }
 
   async sendSignedTransaction(trx: object, privateKey: string) {

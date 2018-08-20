@@ -6,6 +6,9 @@ import { Validated } from "./Validated.sol";
 
 contract Token is ERC20, Validated {
 
+    event ProviderAdded(address _provider);
+    event ProviderApplicationReceived(address _applicationAddress);
+
     // TODO perhaps this should be decided in the constructor.
     uint constant private DECIMALS = 2;
 
@@ -18,22 +21,22 @@ contract Token is ERC20, Validated {
     mapping (address => uint) private wallets;
 
     modifier notExpired() {
-        require(!isExpired(block.timestamp));
+        require(!isExpired(block.timestamp), "101:tokenExpired");
         _;
     }
 
     modifier providerApproved(address _identity) {
-        require(isProvider(_identity) || isProvider(msg.sender));
+        require(isProvider(_identity), "102:providerNotApproved");
         _;
     }
 
     modifier requiresAllowance(address tokenOwner, address spender, uint amount) {
-        require(allowance(tokenOwner, spender) >= amount);
+        require(allowance(tokenOwner, spender) >= amount, "103:allowanceNotSufficient");
         _;
     }
 
     modifier requiresSufficientFund(address sender, uint amount) {
-        require(wallets[sender] >= amount);
+        require(wallets[sender] >= amount, "104:balanceNotSufficient");
         _;
     }
 
@@ -47,12 +50,17 @@ contract Token is ERC20, Validated {
 
     function addProvider(address _provider) public 
         	    notExpired() mustBeEnabled()  requiresOwner(msg.sender) returns (uint _index) {
-        require(!isProvider(_provider));
+        require(!isProvider(_provider), "105:cannotApproveApprovedProvider");
         return providers.push(_provider);
     }
 
     function allowance(address _tokenOwner, address _spender) public view returns (uint _remaining) {
         return vouchers[_tokenOwner][_spender];
+    }
+
+    function applyForProvider() public {
+        require(!isProvider(msg.sender), "107:approvedProviderCannotApply");
+        emit ProviderApplicationReceived(msg.sender);
     }
 
     function approve(address _spender, uint _tokens) public 
@@ -98,7 +106,7 @@ contract Token is ERC20, Validated {
 
     function requestFor(address _sponsor, address _identity) public 
                 notExpired() mustBeEnabled() requiresSufficientFund(_sponsor, fundSize) returns (bool _success) {
-        require (validate(_identity));
+        require (validate(_identity), "109:doesNotMeetValidationRules");
         vouchers[_sponsor][_identity] += fundSize;
         wallets[_sponsor] -= fundSize;
         emit Approval(_sponsor, _identity, fundSize);

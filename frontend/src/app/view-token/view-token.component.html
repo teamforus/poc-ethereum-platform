@@ -42,7 +42,7 @@
             </div>
         </div>
 
-        <div *ngIf="_token.isOwner(_vaultService.currentAddress)">
+        <div *ngIf="_token.isOwner(_vaultService.currentAddress) && _token.enabled">
             <h2>Leverancier toevoegen</h2>
             <div class="card">
                 <div class="card-content info">

@@ -15,7 +15,7 @@ export class ToastService implements EventListener {
   private _toasts: Toast[] = [];
 
   onEvent(event: Event) {
-    this.toast(event.data);
+    this.toast(event.data['tokenName'] + ' is aangevraagd voor ' + event.data['requesterName']);
   }
 
   toast(message: string, level: number = ToastWarningLevels.LOW) {

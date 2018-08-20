@@ -4,9 +4,9 @@ import { NgModule } from '@angular/core';
 import { QRCodeModule } from 'angularx-qrcode';
 import { FormsModule } from '@angular/forms';
 
-import { AppRoutingModule } from './app-routing.module';
+import { AppRoutingModule } from '@app/app-routing.module';
 
-import { AppComponent } from './app.component';
+import { AppComponent } from '@app/app.component';
 import { VoucherListComponent } from '@app/vouchers/list/voucher-list.component';
 
 import { VaultService } from '@utils/vault.service';

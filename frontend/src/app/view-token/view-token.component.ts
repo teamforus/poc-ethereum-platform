@@ -41,11 +41,12 @@ export class ViewTokenComponent {
     this._providerAddressError = !this._web3Service.isValidAddress(this._providerAddress);
     if (!this._providerAddressError) {
       const transaction = await this._web3Service.prepareAddProvider(this._token, this._providerAddress);
-      const gas = await this._web3Service.getGasEstimate(transaction);
-      console.log(gas);
       if (!!transaction) {
         this._qrService.requestFromApp(new AppRequest('transaction', transaction), (message: AppMessage) => {
-          console.log(message.body);
+          this._providerAddress = '';
+          this._toastService.toast('Leverancier wordt toegevoegd');
+          this._qrService.close();
+          this._web3Service.refreshToken(this._token);
         })
       }
     }
@@ -53,9 +54,7 @@ export class ViewTokenComponent {
   }
 
   private async becomeProvider() {
-    const transaction = this._web3Service.prepareApplyForProvider(this._token);
-    if (!!transaction) {
-    }
+    alert('Sorry, deze methode is nog in ontwikkeling...');
   }
 
   private async enable() {
@@ -65,6 +64,7 @@ export class ViewTokenComponent {
         if (message.body.success === true) {
           this._toastService.toast('Voucher wordt nu geactiveerd');
           this._qrService.close();
+          this._web3Service.refreshToken(this._token);
         }
       });
     } else {
