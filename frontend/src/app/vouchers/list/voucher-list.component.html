@@ -6,10 +6,10 @@
     </div>
     <div class="card-header">
         <div class="card-icon-wrapper" title="Klik hier om de QR code te bekijken" (click)="showQr(token)">
-            <qrcode [qrdata]="getQrCode(token)" [size]="64" [level]="'L'"></qrcode>
+            <qrcode [qrdata]="getQrCode(token)" [size]="70" [level]="'L'"></qrcode>
         </div>
         <div class="card-title-wrapper">
-            <h2 class="card-name">{{token.name}}</h2>
+            <h2 class="card-name"><a class="card-name" href="/voucher/{{token.address}}">{{token.name}}</a> </h2>
             <h3 class="card-sponsor">{{token.owner}}</h3>
         </div>
     </div>
@@ -19,7 +19,7 @@
     </div>
     <div class="card-bottom">
         <div class="button-wrapper">
-            <a class="button edit-token" *ngIf="canEdit(token)" href="/voucher/{{token.address}}/wijzigen">Aanpassen</a>
+            <a class="button edit-token" *ngIf="canEdit(token)" href="/voucher/{{token.address}}">Meer weten</a>
             <a class="button request-token" *ngIf="canRequest(token)" href="/voucher/{{token.address}}/aanvragen">Aanvragen</a>
         </div>
     </div>

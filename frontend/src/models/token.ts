@@ -12,13 +12,18 @@ export class Token {
   ) {
     // Javascript millisecond fix
     //this.expirationTimestamp *= 1000; 
-    this.expirationDate = new Date(expirationTimestamp);
+    this.expirationDate = new Date(expirationTimestamp*1000);
   }
 
   approvals: string[] = [];
+  providerRequests: string[] = [];
 
   get expired(): boolean {
     return this.state === 2;
+  }
+
+  get hasProviders(): boolean {
+    return !!this.providers && !!this.providers.length;
   }
 
   hasRequested(address: string): boolean {
@@ -27,6 +32,13 @@ export class Token {
         return true;
       }
     });
+    return false;
+  }
+
+  isOwner(address:string): boolean {
+    if (!!address && !!address.toLowerCase) {
+      return (address.toLowerCase() === this.owner.toLowerCase());
+    }
     return false;
   }
 

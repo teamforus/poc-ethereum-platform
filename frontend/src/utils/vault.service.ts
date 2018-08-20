@@ -13,7 +13,7 @@ export class VaultService implements CanActivate {
   constructor(
     private _router: Router // For canActivate authentication
   ) {
-    this._accounts = JSON.parse(localStorage.getItem(this.ACCOUNT_KEY)) || [];
+    this._accounts = JSON.parse(localStorage.getItem(this.ACCOUNT_KEY) || '[]');
     this.currentAccount = JSON.parse(localStorage.getItem(this.ACCOUNT_CURRENT_KEY)) || undefined;
   }
 
