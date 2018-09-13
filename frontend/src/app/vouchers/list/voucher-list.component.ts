@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 import { QRCode } from 'qrcode';
 import { QrService } from '@utils/qr.service';
 import { Router } from '@angular/router';
+import { AppRequest, AppMessage } from '@utils/app.service';
 
 @Component({
   selector: 'app-vouchers',
@@ -21,10 +22,10 @@ export class VoucherListComponent implements OnInit {
     private vault: VaultService,
     private qrService: QrService,
     private web3Service: Web3Service
-  ) { 
+  ) {
   }
 
-  private getQrCode(token: Token):string {
+  private getQrCode(token: Token): string {
     const json = {
       address: token.address,
       owner: token.owner,
@@ -36,22 +37,24 @@ export class VoucherListComponent implements OnInit {
   async ngOnInit() {
     this.tokens$ = this.web3Service.tokens;
   }
-  
-  private showQr(token:Token) {
-    this.qrService.present(this.getQrCode(token));
+
+  private showQr(token: Token) {
+    this.qrService.requestFromApp(new AppRequest('token', JSON.parse(this.getQrCode(token))), (message:AppMessage) => {
+      // don't care if any app adds the token. Just keep the request up.
+    });
   }
 
-  private canEdit(token:Token): boolean {
-    return  !!this.vault.currentAccount &&
-          this.vault.currentAddress.toLowerCase() === token.owner.toLowerCase() && 
-          !token.enabled && !token.expired;
+  private canEdit(token: Token): boolean {
+    return !!this.vault.currentAccount &&
+      this.vault.currentAddress.toLowerCase() === token.owner.toLowerCase() &&
+      !token.enabled && !token.expired;
   }
 
-  private canRequest(token:Token): boolean {
-    return !!this.vault.currentAccount && 
-          this.vault.currentAddress.toLowerCase() !== token.owner.toLowerCase() && 
-          (!token.hasRequested(this.vault.currentAddress)) &&
-          token.enabled && !token.expired;
+  private canRequest(token: Token): boolean {
+    return !!this.vault.currentAccount &&
+      this.vault.currentAddress.toLowerCase() !== token.owner.toLowerCase() &&
+      (!token.hasRequested(this.vault.currentAddress)) &&
+      token.enabled && !token.expired;
   }
 
   getStatusLabel(token: Token): string {

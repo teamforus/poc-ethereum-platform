@@ -8,18 +8,17 @@
                 de volgende gegegevens:
             </p>
             <ul>
-                <li>uw naam;</li>
-                <li>uw inkomen;</li>
-                <li>het aantal kinderen waar u voor zorgt;</li>
-                <li>uw woonplaats.</li>
+                <li>BSN</li>
             </ul>
             <p>
                 Als u toestemming heeft gegeven voor deze gegevens, dan kan het contract kijken of u recht heeft op {{ _token.name }}.
             </p>
+            <p *ngIf="!permissionGranted && permissionChecked">U lijkt geen recht te hebben op {{_token.name}}.</p>
         </div>
         <div class="card-bottom">
             <div class="button-wrapper">
-                <button class="button-submit" (click)="requestVoucher()">Aanvraag indienen</button>
+                <button class="button-submit" *ngIf="!permissionChecked" (click)="checkPermission()">BSN valideren</button>
+                <button class="button-submit" *ngIf="permissionChecked" (click)="requestVoucher()" [disabled]="!permissionGranted">Aanvraag indienen</button>
             </div>
         </div>
     </div>

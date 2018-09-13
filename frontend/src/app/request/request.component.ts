@@ -14,6 +14,8 @@ import { ToastWarningLevels } from '@models/toast';
   styleUrls: ['./request.component.scss']
 })
 export class RequestComponent implements OnInit {
+  private _permissionChecked = false;
+  private _permissionGranted = false;
   private _token: Token;
 
   constructor(
@@ -24,6 +26,12 @@ export class RequestComponent implements OnInit {
     private _vaultService: VaultService,
     private _web3Service: Web3Service
   ) { }
+
+  private async checkPermission() {
+    this._web3Service.getClaimsByTopic(this._vaultService.currentAddress, 123);
+    this._permissionGranted = true;
+    this._permissionChecked = true;
+  }
 
   async ngOnInit() {
     this._route.params.subscribe(params => {

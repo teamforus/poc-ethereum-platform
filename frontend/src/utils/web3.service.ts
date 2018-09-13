@@ -3,8 +3,9 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { Token } from '@models/token';
 import { Token as CreateToken } from '@models/form/create-token';
 import { AppService, AppMessage } from '@utils/app.service';
-import * as tokenAbi from '@contracts/forus-token';
+import * as identityContract from '@contracts/identity';
 import * as platformAbi from '@contracts/platform-forus';
+import * as tokenAbi from '@contracts/forus-token';
 import * as Web3 from 'web3';
 import { VaultService } from '@utils/vault.service';
 import { Contract, EventLog } from 'web3/types';
@@ -16,7 +17,7 @@ import { ApprovalSponsorEvent } from '@models/approval-sponsor-event';
 import { Account } from '@models/account';
 
 @Injectable()
-export class Web3Service {
+export class Web3Service { 
   // In case of emergancy private static readonly PLATFORM_ADDRESS = '0xd7562879aaea423f0a9e44e264d3bbf8d1d2f57c';
   private static readonly PLATFORM_ADDRESS = '0xf75779656434e06ed7dd6dfbbec3cecabb80f266';
   private static readonly TRANSACTION_TEMPLATE = {
@@ -25,8 +26,9 @@ export class Web3Service {
     gas: 8000000, 
     gasPrice: 1
   };
-  private static readonly WEB3_CONNECTION_STRING = 'ws://10.10.12.85:8546';
-
+  // private static readonly WEB3_CONNECTION_STRING = 'ws://192.168.2.8:8546';
+  private static readonly WEB3_CONNECTION_STRING = 'ws://127.0.0.1:8546';
+ 
   private _approvals;
   private _approvalsLoaded = false; 
   private _whisperPrivateKey;
@@ -60,11 +62,11 @@ export class Web3Service {
     let gas = -1;
     try {
       gas = await this.getGasEstimate(transaction);
-    } finally {
+    } finally { 
       return gas > 0;
     }
-  }
-
+  } 
+ 
   async createTransaction(from: string, to: string, dataAbi: string = undefined): Promise<JSON> {
     let transaction = JSON.parse(
       JSON.stringify(Web3Service.TRANSACTION_TEMPLATE)
@@ -75,6 +77,13 @@ export class Web3Service {
     if (!!dataAbi) transaction['data'] = dataAbi;
     return transaction;
   } 
+
+  async getClaimsByTopic(address: string, topic: number) {
+    const contract = await this.getIdentityContract(address);
+    const result = await contract.methods.getClaimIdsByTopic(topic).call();
+    const events = await contract.getPastEvents("allEvents");
+    console.log(result);
+  }
 
   private async getContract(abi, address: string): Promise<Contract> {
     return new this.web3.eth.Contract(abi, address); 
@@ -87,7 +96,7 @@ export class Web3Service {
 
   async getTokenByAddress(address: string): Promise<Token> {
     const contract = await this.getTokenContract(address);
-    let providers = [];
+    let providers = []; 
     const providerCount = await contract.methods.providerCount().call();
     for (let p = 0; p < providerCount; p++) { 
       providers.push(await contract.methods.providers(p).call());
@@ -113,6 +122,10 @@ export class Web3Service {
       })*/
     }
     return token;
+  }
+
+  private async getIdentityContract(address: string): Promise<Contract> {
+    return await this.getContract(identityContract.abi, address);
   }
 
   private async getTokenContract(address: string): Promise<Contract> {
@@ -159,7 +172,7 @@ export class Web3Service {
       }).bind(this));
       tokenContract.events.Enabled(this.updateTokens.bind(this));
       this._tokenListeners.push(address);
-    }
+    } 
   }
 
   /** 
